@@ -4,22 +4,24 @@ using Microsoft.Extensions.Logging;
 using JsonApiDotNetCoreExample.Data;
 using Microsoft.EntityFrameworkCore;
 using JsonApiDotNetCore.Extensions;
-using System;
 using JsonApiDotNetCoreExample;
 
 namespace JsonApiDotNetCoreExampleTests.Startups
 {
     public class ClientGeneratedIdsStartup : Startup
     {
-        public ClientGeneratedIdsStartup(IHostingEnvironment env)
+        public ClientGeneratedIdsStartup(IWebHostEnvironment env)
         : base (env)
         {  }
 
-        public override IServiceProvider ConfigureServices(IServiceCollection services)
+        public override void ConfigureServices(IServiceCollection services)
         {
             var loggerFactory = new LoggerFactory();
 
-            loggerFactory.AddConsole();
+            services.AddLogging(b =>
+            {
+                b.AddConsole();
+            });
 
             services.AddSingleton<ILoggerFactory>(loggerFactory);
 
@@ -35,8 +37,6 @@ namespace JsonApiDotNetCoreExampleTests.Startups
                 opt.IncludeTotalRecordCount = true;
                 opt.AllowClientGeneratedIds = true;
             });
-
-            return services.BuildServiceProvider();
         }
     }
 }

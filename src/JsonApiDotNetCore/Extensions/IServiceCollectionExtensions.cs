@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace JsonApiDotNetCore.Extensions
 {
@@ -34,22 +35,17 @@ namespace JsonApiDotNetCore.Extensions
             return AddJsonApi<TContext>(services, options, mvcBuilder);
         }
 
-        public static IServiceCollection AddJsonApi<TContext>(this IServiceCollection services,
-           Action<JsonApiOptions> options,
-           IMvcCoreBuilder mvcBuilder) where TContext : DbContext
+        public static IServiceCollection AddJsonApi<TContext>(
+            this IServiceCollection services,
+            Action<JsonApiOptions> options,
+            IMvcCoreBuilder mvcBuilder) where TContext : DbContext
         {
             var config = new JsonApiOptions();
 
             options(config);
 
             config.BuildContextGraph(builder => builder.AddDbContext<TContext>());
-
-            mvcBuilder
-                .AddMvcOptions(opt =>
-                {
-                    opt.Filters.Add(typeof(JsonApiExceptionFilter));
-                    opt.SerializeAsJsonApi(config);
-                });
+            mvcBuilder.AddMvcOptions(opt => AddMvcOptions(opt, config));
 
             AddJsonApiInternals<TContext>(services, config);
             return services;
@@ -60,18 +56,18 @@ namespace JsonApiDotNetCore.Extensions
             IMvcCoreBuilder mvcBuilder)
         {
             var config = new JsonApiOptions();
-
             options(config);
 
-            mvcBuilder
-                .AddMvcOptions(opt =>
-                {
-                    opt.Filters.Add(typeof(JsonApiExceptionFilter));
-                    opt.SerializeAsJsonApi(config);
-                });
+            mvcBuilder.AddMvcOptions(opt => AddMvcOptions(opt, config));
 
             AddJsonApiInternals(services, config);
             return services;
+        }
+
+        private static void AddMvcOptions(MvcOptions options, JsonApiOptions config)
+        {
+            options.Filters.Add(typeof(JsonApiExceptionFilter));
+            options.SerializeAsJsonApi(config);
         }
 
         public static void AddJsonApiInternals<TContext>(
@@ -93,7 +89,7 @@ namespace JsonApiDotNetCore.Extensions
             if (jsonApiOptions.ContextGraph.UsesDbContext == false)
             {
                 services.AddScoped<DbContext>();
-                services.AddSingleton<DbContextOptions>(new DbContextOptionsBuilder().Options);
+                services.AddSingleton(new DbContextOptionsBuilder().Options);
             }
 
             if (jsonApiOptions.EnableOperations)
@@ -122,8 +118,8 @@ namespace JsonApiDotNetCore.Extensions
 
             services.AddScoped(typeof(IResourceService<>), typeof(EntityResourceService<>));
             services.AddScoped(typeof(IResourceService<,>), typeof(EntityResourceService<,>));
-            services.AddSingleton<JsonApiOptions>(jsonApiOptions);
-            services.AddSingleton<IContextGraph>(jsonApiOptions.ContextGraph);
+            services.AddSingleton(jsonApiOptions);
+            services.AddSingleton(jsonApiOptions.ContextGraph);
             services.AddScoped<IJsonApiContext, JsonApiContext>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IScopedServiceProvider, RequestScopedServiceProvider>();
@@ -140,6 +136,10 @@ namespace JsonApiDotNetCore.Extensions
             services.AddScoped<IQueryParser, QueryParser>();
             services.AddScoped<IControllerContext, Services.ControllerContext>();
             services.AddScoped<IDocumentBuilderOptionsProvider, DocumentBuilderOptionsProvider>();
+
+            services.AddScoped<ILoggerFactory, LoggerFactory>();
+
+            // services.AddScoped<IActionFilter, TypeMatchFilter>();
         }
 
         private static void AddOperationServices(IServiceCollection services)

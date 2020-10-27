@@ -9,13 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NoEntityFrameworkExample.Services;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace NoEntityFrameworkExample
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -28,8 +27,13 @@ namespace NoEntityFrameworkExample
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging(b =>
+            {
+                b.AddConfiguration(Configuration.GetSection("Logging"));
+            });
+
             // Add framework services.
             var mvcBuilder = services.AddMvcCore();
 
@@ -45,20 +49,16 @@ namespace NoEntityFrameworkExample
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>(); 
             optionsBuilder.UseNpgsql(Configuration.GetValue<string>("Data:DefaultConnection")); 
             services.AddSingleton<IConfiguration>(Configuration);
-            services.AddSingleton<DbContextOptions<AppDbContext>>(optionsBuilder.Options);
+            services.AddSingleton(optionsBuilder.Options);
             services.AddScoped<AppDbContext>();
-
-            return services.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, AppDbContext context)
+        public void Configure(IApplicationBuilder app, AppDbContext context)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-
             context.Database.EnsureCreated();
 
-            app.UseMvc();
+            app.UseJsonApi();
         }
     }
 }

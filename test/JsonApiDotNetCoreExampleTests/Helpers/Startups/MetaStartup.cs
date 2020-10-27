@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using JsonApiDotNetCoreExample.Data;
 using Microsoft.EntityFrameworkCore;
 using JsonApiDotNetCore.Extensions;
-using System;
 using JsonApiDotNetCoreExample;
 using JsonApiDotNetCore.Services;
 using JsonApiDotNetCoreExampleTests.Services;
@@ -13,14 +12,18 @@ namespace JsonApiDotNetCoreExampleTests.Startups
 {
     public class MetaStartup : Startup
     {
-        public MetaStartup(IHostingEnvironment env)
+        public MetaStartup(IWebHostEnvironment env)
         : base (env)
         {  }
 
-        public override IServiceProvider ConfigureServices(IServiceCollection services)
+        public override void ConfigureServices(IServiceCollection services)
         {
             var loggerFactory = new LoggerFactory();
-            loggerFactory.AddConsole(LogLevel.Warning);
+            services.AddLogging(b =>
+            {
+                b.SetMinimumLevel(LogLevel.Warning);
+                b.AddConsole();
+            });
 
             services
                 .AddSingleton<ILoggerFactory>(loggerFactory)
@@ -32,8 +35,6 @@ namespace JsonApiDotNetCoreExampleTests.Startups
                     options.IncludeTotalRecordCount = true;
                 })
                 .AddScoped<IRequestMeta, MetaService>();
-
-            return services.BuildServiceProvider();
         }
     }
 }

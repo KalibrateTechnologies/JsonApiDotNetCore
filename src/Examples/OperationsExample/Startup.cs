@@ -1,4 +1,3 @@
-using System;
 using JsonApiDotNetCore.Extensions;
 using JsonApiDotNetCoreExample.Data;
 using Microsoft.AspNetCore.Builder;
@@ -14,7 +13,7 @@ namespace OperationsExample
     {
         public readonly IConfiguration Config;
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -24,29 +23,28 @@ namespace OperationsExample
             Config = builder.Build();
         }
 
-        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
-            var loggerFactory = new LoggerFactory();
-            loggerFactory.AddConsole(LogLevel.Warning);
-
-            services.AddSingleton<ILoggerFactory>(loggerFactory);
+            services.AddLogging(b =>
+            {
+                b.SetMinimumLevel(LogLevel.Warning);
+                b.AddConsole();
+                b.AddConfiguration(Config.GetSection("Logging"));
+            });
 
             services.AddDbContext<AppDbContext>(options => options.UseNpgsql(GetDbConnectionString()), ServiceLifetime.Scoped);
 
             services.AddJsonApi<AppDbContext>(opt => opt.EnableOperations = true);
-
-            return services.BuildServiceProvider();
         }
 
         public virtual void Configure(
             IApplicationBuilder app,
-            IHostingEnvironment env,
+            IWebHostEnvironment env,
             ILoggerFactory loggerFactory,
             AppDbContext context)
         {
             context.Database.EnsureCreated();
-
-            loggerFactory.AddConsole(Config.GetSection("Logging"));
+            
             app.UseJsonApi();
         }
 

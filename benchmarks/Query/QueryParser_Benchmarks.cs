@@ -7,11 +7,12 @@ using JsonApiDotNetCore.Configuration;
 using JsonApiDotNetCore.Internal;
 using JsonApiDotNetCore.Models;
 using JsonApiDotNetCore.Services;
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Moq;
 
-namespace Benchmarks.Query {
+namespace Benchmarks.Query
+{
     [MarkdownExporter, SimpleJob(launchCount : 3, warmupCount : 10, targetCount : 20), MemoryDiagnoser]
     public class QueryParser_Benchmarks {
         private readonly BenchmarkFacade _queryParser;
