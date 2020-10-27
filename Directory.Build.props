@@ -4,7 +4,7 @@
     <NetCoreAppVersion>netcoreapp3.1</NetCoreAppVersion>
     <NetStandardVersion>netstandard2.1</NetStandardVersion>
 
-    <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
+    <AspNetCoreVersion>3.1.9</AspNetCoreVersion>
 
     <MicrosoftHostingVersion>3.1.9</MicrosoftHostingVersion>
     <MicrosoftLoggingVersion>3.1.9</MicrosoftLoggingVersion>

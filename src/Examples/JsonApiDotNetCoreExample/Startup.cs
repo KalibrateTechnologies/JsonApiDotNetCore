@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 using JsonApiDotNetCoreExample.Data;
 using Microsoft.EntityFrameworkCore;
 using JsonApiDotNetCore.Extensions;
+using JsonApiDotNetCoreExample.Models;
+using JsonApiDotNetCoreExample.Resources;
+using JsonApiDotNetCore.Models;
 
 namespace JsonApiDotNetCoreExample
 {
@@ -33,16 +36,20 @@ namespace JsonApiDotNetCoreExample
                 b.AddConfiguration(Config.GetSection("Logging"));
             });
 
-            var mvcBuilder = services.AddMvcCore();
-
             services.AddDbContext<AppDbContext>(options => 
                 options.UseNpgsql(GetDbConnectionString()), ServiceLifetime.Transient)
                 .AddJsonApi(options => {
                     options.Namespace = "api/v1";
                     options.DefaultPageSize = 5;
                     options.IncludeTotalRecordCount = true;
+                    options.BuildContextGraph(builder =>
+                    {
+                        builder.AddResource<User>("user");
+                    });
                 },
-                mvcBuilder);
+                services.AddMvcCore().AddNewtonsoftJson());
+
+            services.AddScoped<ResourceDefinition<User>, UserResource>();
         }
 
         public virtual void Configure(

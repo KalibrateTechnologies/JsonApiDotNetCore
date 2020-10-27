@@ -4,13 +4,13 @@
             "src": [
                 {
                     "files": [ "**.csproj" ],
-                    "src": "C:\\Users\\jnance\\dev\\json-api-dotnet-core\\src\\JsonApiDotNetCore"
+                    "src": "C:\\dev\\JsonApiDotNetCore\\src\\JsonApiDotNetCore"
                 }
             ],
             "dest": "api",
             "disableGitFeatures": false,
             "properties": {
-                "targetFramework": "netstandard2.0"
+                "targetFramework": "netcoreapp3.1"
             }
         }
     ],

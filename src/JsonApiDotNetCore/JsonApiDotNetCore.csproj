@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <VersionPrefix>2.3.4</VersionPrefix>
     <TargetFrameworks>$(NetCoreAppVersion)</TargetFrameworks>
@@ -25,13 +25,14 @@
 
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="0.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(EFCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(MicrosoftHostingVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftLoggingVersion)" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
     <PackageReference Include="System.ValueTuple" Version="$(TuplesVersion)" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-62925-02" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <!-- 
@@ -40,7 +41,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
     <GenerateDocumentation Condition="'$(IsWindows)|$(DocFx)' == 'true|true'">true</GenerateDocumentation>
-    <DocumentationFile>bin\Release\netstandard2.0\JsonApiDotNetCore.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netcoreapp3.1\JsonApiDotNetCore.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(GenerateDocumentation)' == 'true'">

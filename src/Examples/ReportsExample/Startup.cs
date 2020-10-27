@@ -25,7 +25,7 @@ namespace ReportsExample
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            var mvcBuilder = services.AddMvcCore();
+            var mvcBuilder = services.AddMvcCore().AddNewtonsoftJson();
             services.AddJsonApi(opt =>
             {
                 opt.BuildContextGraph(builder =>

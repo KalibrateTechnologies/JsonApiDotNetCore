@@ -24,14 +24,14 @@ namespace JsonApiDotNetCore.Extensions
         public static IServiceCollection AddJsonApi<TContext>(this IServiceCollection services)
             where TContext : DbContext
         {
-            var mvcBuilder = services.AddMvcCore();
+            var mvcBuilder = services.AddMvcCore().AddNewtonsoftJson();
             return AddJsonApi<TContext>(services, opt => { }, mvcBuilder);
         }
 
         public static IServiceCollection AddJsonApi<TContext>(this IServiceCollection services, Action<JsonApiOptions> options)
             where TContext : DbContext
         {
-            var mvcBuilder = services.AddMvcCore();
+            var mvcBuilder = services.AddMvcCore().AddNewtonsoftJson();
             return AddJsonApi<TContext>(services, options, mvcBuilder);
         }
 

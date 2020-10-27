@@ -35,7 +35,7 @@ namespace NoEntityFrameworkExample
             });
 
             // Add framework services.
-            var mvcBuilder = services.AddMvcCore();
+            var mvcBuilder = services.AddMvcCore().AddNewtonsoftJson();
 
             services.AddJsonApi(options => {
                 options.Namespace = "api/v1";
